@@ -1,0 +1,57 @@
+redux with pure SSR
+Using the redux store in the context of next js 13
+Using redux in the client context and server
+
+
+
+We have a big component tree:
+	1- Create pokemon SSR table (that is going to display the results from the api)
+	2- No prop drilling from the page.tsx (home page that contains the fetch method 	   to that pokemon table)
+	3- We will use redux store for that
+
+Example of using redux dusring SSR time:
+	If we have a e-commecrce website in which we are going to retreive data
+	about products with some images the usage of redux at SSR time is the way to go.
+	
+	In our example: the page.tsx (home page) is a server component, the only way to 	communicate with the sotre is throught invoking it directly with (store.dispatch 	or store.getState)
+	
+	Server Component ===> directly call store.dispatch(...) / store.getState(...)
+	Hooks cannot be used in server component
+
+IMPORTANT note:
+	In pureSSR directory, we set and retreive data from the store (server side)
+	When we create a client component and we want it to get the array of the 	pokemeons that the server component already set we found an empty array in the 	client component
+	
+	1- Server component set data in the sotre
+	2- After creating provider, hooks and setup redux boiletplate for client 	components
+	3- The client component to access the data
+	4- But empty array found
+
+	How to move data from the server to the client ? (data that was set in the 	store by the server component ?)
+	1- If a server component encapsulates a client component
+	2- Anything that comes in as a property is serialized from the server to the 	client
+	
+	How it is done ?
+	1- Server component fetch data
+	2- Client component receives the data as a prop
+	3- That client component will fill the store by the data received as prop
+
+
+Wrap up
+	1- Server component fetch data
+	2- The server component will set in the redux store (server side)
+	3- The server component will pass the data to a client side compoenet 	(Preloader) to load the same data in the redux store (client side)
+	4- All components can access the redux store (server components access the store 	on the server, client components access the store on the client)
+
+Api reducer hooks and server component:
+	1- At the file pokemonApi line 1	
+	2- When we add /react at the end of the import, a react context will pop up
+	the package will automatically create some hooks and this will lead to an error 	(server side)
+	3- The api reduxer is not used by the server but still refrenced since we 	imported the api reducer in the sotre.
+	4- Don't add the /react at the end of the import 
+	import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query"; (Yes)
+	import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"; (No)
+
+
+Redux on the server
+Getting the server to the client using the Preloader
